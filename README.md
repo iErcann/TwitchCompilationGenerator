@@ -1,2 +1,3 @@
-# TwitchCompilationGenerator
-A simple script to make a twitch compilation video without any video editing software.
+# Simple automatic twitch compilation generation.
+
+Demo: https://www.youtube.com/watch?v=4EfBB9VPioI
