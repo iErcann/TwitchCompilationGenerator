@@ -8,12 +8,20 @@ const readline = require("readline");
 if (client_id === "")
   throw new Error("Empty client_id, please modify it in config.js!");
 
+const folder = {
+  merged: "merged_video",
+  edited: "edited_videos",
+  raw: "raw_videos",
+};
 axios.defaults.headers.common["Client-ID"] = client_id;
 axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
 
-!fs.existsSync("output") && fs.mkdirSync("output");
-!fs.existsSync("edited_videos") && fs.mkdirSync("edited_videos");
-!fs.existsSync("videos") && fs.mkdirSync("videos");
+for (const [key, value] of Object.entries(folder)) {
+  if (fs.existsSync(value)) {
+    fs.rmdirSync(value, { recursive: true });
+  }
+  fs.mkdirSync(value);
+}
 
 (async function () {
   function askQuestion(query) {
@@ -44,7 +52,7 @@ axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
 
       for (let i = 0; i < clips.length; i++) {
         const filename = `${i}`;
-        const path = `videos/${filename}.mp4`;
+        const path = `${folder.raw}/${filename}.mp4`;
         const clip = clips[i];
         const thumbUrl = clip.thumbnails.medium;
         const dlUrl =
@@ -130,7 +138,7 @@ axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
             },
           },
         ])
-        .save(`edited_videos/${filename}.mp4`);
+        .save(`${folder.edited}/${filename}.mp4`);
     });
   }
   function mergeVideos() {
@@ -139,16 +147,16 @@ axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
         console.log("Merge finished.");
         resolve();
       });
-      const directoryPath = path.join(__dirname, "edited_videos");
+      const directoryPath = path.join(__dirname, folder.edited);
       console.log("Merge started.");
       fs.readdir(directoryPath, function (err, files) {
         if (err) {
           return console.log("Unable to scan directory: " + err);
         }
         files.forEach(function (file) {
-          proc.input("edited_videos/" + file);
+          proc.input(`${folder.edited}/${file}`);
         });
-        proc.mergeToFile("output/merged.mp4");
+        proc.mergeToFile(`${folder.merged}/merged.mp4`);
       });
     });
   }
