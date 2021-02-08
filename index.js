@@ -1,18 +1,20 @@
 const { client_id } = require("./config.js");
-if (client_id === "")
-  throw new Error("Empty client_id, please modify it in config.js!");
 const axios = require("axios").default;
 const path = require("path");
+const ffmpeg = require("fluent-ffmpeg");
+const https = require("https");
+const fs = require("fs");
+const readline = require("readline");
+if (client_id === "")
+  throw new Error("Empty client_id, please modify it in config.js!");
 
 axios.defaults.headers.common["Client-ID"] = client_id;
 axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
 
-var ffmpeg = require("fluent-ffmpeg");
+!fs.existsSync("output") && fs.mkdirSync("output");
+!fs.existsSync("edited_videos") && fs.mkdirSync("edited_videos");
+!fs.existsSync("videos") && fs.mkdirSync("videos");
 
-const https = require("https");
-const fs = require("fs");
-
-const readline = require("readline");
 (async function () {
   function askQuestion(query) {
     const rl = readline.createInterface({
