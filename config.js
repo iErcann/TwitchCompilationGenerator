@@ -1,3 +1,3 @@
-const client_id = " ";
+const client_id = "";
 
 module.exports = { client_id };
