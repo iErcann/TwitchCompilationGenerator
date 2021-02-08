@@ -1,5 +1,3 @@
-const client_id = "YOUR CLIENT ID";
-const client_secret = "YOUR SECRET";
-const access_token = "ACCESS TOKEN";
+const client_id = " ";
 
-export { client_id, client_secret, access_token};
+module.exports = { client_id };

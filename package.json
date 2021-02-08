@@ -1,0 +1,23 @@
+{
+  "name": "twitchcompilationgenerator",
+  "version": "1.0.0",
+  "description": "Demo: https://www.youtube.com/watch?v=4EfBB9VPioI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iErcann/TwitchCompilationGenerator.git"
+  },
+  "author": "iercan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iErcann/TwitchCompilationGenerator/issues"
+  },
+  "homepage": "https://github.com/iErcann/TwitchCompilationGenerator#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "fluent-ffmpeg": "^2.1.2"
+  }
+}
