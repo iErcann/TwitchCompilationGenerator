@@ -24,6 +24,6 @@ Open `config.js` then paste your client id.
 To get your own client id you need to create a Twitch application [here](https://dev.twitch.tv/console/apps)
 
 ### Running the project
-    $ node index.js
+    $ npm run start
  
  
