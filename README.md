@@ -20,7 +20,7 @@ It should work without any problem, see if this package is installed:  `libav-to
 https://github.com/fluent-ffmpeg/node-fluent-ffmpeg#prerequisites
 
 ### Configure  
-Open `config.js` then paste your client id. 
+Open `config.ts` then paste your client id. 
 To get your own client id you need to create a Twitch application [here](https://dev.twitch.tv/console/apps)
 
 ### Running the project
