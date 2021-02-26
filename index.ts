@@ -5,7 +5,6 @@ import * as https from 'https';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
 import { IncomingMessage } from 'http';
-import { resolve } from 'path';
 import * as cliProgress from 'cli-progress';
 import * as colors from 'colors';
 
@@ -15,9 +14,17 @@ enum Folder {
 	merged = 'merged_video',
 	edited = 'edited_videos',
 	raw = 'raw_videos',
+	data = 'data_videos' 
 }
 
-interface ICompilationConfig {
+export const enum PopularGames {
+	CSGO = 'Counter Strike: Global Offensive',
+	JustChatting = 'Just Chatting',
+	GTA5 = 'Grand Theft Auto V',
+	LOL = 'League of Legends',
+	WOW = 'World of Warcraft',
+}
+export interface ICompilationConfig {
 	channelName: string;
 	clipCount: number;
 	period: string;
@@ -25,6 +32,7 @@ interface ICompilationConfig {
 	language: string;
 	editing: boolean;
 	game: string;
+	log: boolean;
 }
 
 axios.defaults.headers.common['Client-ID'] = client_id;
@@ -68,14 +76,13 @@ function downloadClip(path: string, dlUrl: string): Promise<string> {
 function editVideo(originalPath: string, filename: string, clipData): Promise<string> {
 	console.log('Clip edit progress '.cyan);
 	const opt = {
-		format: '[{bar}] {percentage}% | ETA: {eta}s | {value}% '.cyan,
+		format: '[{bar}] {percentage}% | ETA: {eta}s'.cyan,
 	};
 	const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
-	progressBar.start(100, 0);
 
 	return new Promise((resolve) => {
 		ffmpeg(originalPath)
-			.on('error', (err) => {
+			.on('error', (err: Error) => {
 				console.log('an error happened: ' + err.message);
 			})
 			.on('progress', (info) => {
@@ -85,6 +92,9 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 				progressBar.update(100);
 				progressBar.stop();
 				resolve('Edition finished');
+			})
+			.on('start', () => {
+				progressBar.start(100, 0);
 			})
 
 			.videoFilters([
@@ -125,10 +135,25 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 	});
 }
 function mergeVideos(folderToMerge: string): Promise<string> {
+	const opt = {
+		format: '[{bar}] {percentage}% | ETA: {eta}s '.cyan,
+	};
+	const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
+
 	return new Promise((resolve) => {
-		const proc = ffmpeg().on('end', () => {
-			resolve('Merge finished.');
-		});
+		const proc = ffmpeg()
+			.on('end', () => {
+				progressBar.update(100);
+				progressBar.stop();
+				resolve('Merge finished.');
+			})
+			.on('progress', (info) => {
+				 progressBar.update(Number(info.percent.toFixed(2)));
+			})
+			.on('start', () => {
+				progressBar.start(100, 0);
+			});
+
 		const directoryPath = path.join(__dirname, folderToMerge);
 		console.log('\nMerge started.'.cyan);
 		fs.readdir(directoryPath, (err, files: string[]) => {
@@ -153,15 +178,16 @@ async function run(): Promise<any> {
 	const language = compilationConfig.language;
 	const editing = compilationConfig.editing;
 	const game = compilationConfig.game;
+	const log = compilationConfig.log;
 
 	let apiUrl = `https://api.twitch.tv/kraken/clips/top?period=${period}&trending=${trending}&limit=${clipCount}`;
 	apiUrl += language.length > 0 ? `&language=${language}` : '';
 	apiUrl += channel.length > 0 ? `&channel=${channel}` : '';
 	apiUrl += game.length > 0 ? `&game=${game}` : '';
-	
+
 	console.log(compilationConfig);
 	if (game.length && channel.length) {
-		console.log('Both channel and game are specified, game is ignored.'.red)
+		console.log('Both channel and game are specified, game is ignored.'.red);
 	}
 	axios
 		.get(apiUrl, {})
@@ -173,7 +199,6 @@ async function run(): Promise<any> {
 				const filename = `${i}`;
 				const path = `${Folder.raw}/${filename}.mp4`;
 				const clip = clips[i];
-				//				console.log(clip);
 				const thumbUrl = clip.thumbnails.medium;
 				const dlUrl = thumbUrl.substring(0, thumbUrl.indexOf('-preview')) + '.mp4';
 				console.log(`\nClip ${i}`);
@@ -181,15 +206,19 @@ async function run(): Promise<any> {
 				console.log(`\t Title :  ${clip.title}`);
 				console.log(`\t Game: ${clip.game}`);
 				console.log(`\t Views: ${clip.views}`);
-
+				
 				//console.log(clip);
 				const downloadMsg = await downloadClip(path, dlUrl);
 				console.log(downloadMsg.green);
-
+				
 				if (editing) {
 					const editMsg = await editVideo(path, filename, clip);
 					console.log(editMsg.green);
+				} 
+				if (log) {
+					fs.writeFileSync(`${Folder.data}/${filename}.json`, JSON.stringify(clip));
 				}
+					
 			}
 			const folderToMerge = editing ? Folder.edited : Folder.raw;
 			const mergedMsg = await mergeVideos(folderToMerge);
@@ -197,12 +226,7 @@ async function run(): Promise<any> {
 		})
 		.catch((error) => {
 			console.error(error);
-		})
-		.finally(() => {
-			resolve('End.');
 		});
 }
 
-run().then((endMsg) => console.log(endMsg));
-
-export { ICompilationConfig };
+run();
