@@ -9,7 +9,7 @@ import { resolve } from 'path';
 import * as cliProgress from 'cli-progress';
 import * as colors from 'colors';
 
-if (client_id.length === 0) throw new Error('Empty client_id, please modify it in config.js!');
+if (client_id.length === 0) throw new Error('Empty client_id, please modify it in config.ts!'.green);
 
 enum Folder {
 	merged = 'merged_video',
@@ -18,8 +18,8 @@ enum Folder {
 }
 
 interface ICompilationConfig {
-	channelName:  string;
-	clipCount: string;
+	channelName: string;
+	clipCount: number;
 	period: string;
 	trending: boolean;
 	language: string;
@@ -123,19 +123,19 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 			.save(`${Folder.edited}/${filename}.mp4`);
 	});
 }
-function mergeVideos(): Promise<string> {
+function mergeVideos(folderToMerge: string): Promise<string> {
 	return new Promise((resolve) => {
 		const proc = ffmpeg().on('end', () => {
 			resolve('Merge finished.');
 		});
-		const directoryPath = path.join(__dirname, Folder.edited);
-		console.log('Merge started.'.cyan);
+		const directoryPath = path.join(__dirname, folderToMerge);
+		console.log('\nMerge started.'.cyan);
 		fs.readdir(directoryPath, (err, files: string[]) => {
 			if (err) {
 				return console.log('Unable to scan directory: ' + err);
 			}
 			files.forEach((file: string) => {
-				proc.input(`${Folder.edited}/${file}`);
+				proc.input(`${folderToMerge}/${file}`);
 			});
 			proc.mergeToFile(`${Folder.merged}/merged.mp4`);
 		});
@@ -146,10 +146,12 @@ async function run(): Promise<any> {
 	resetFolders();
 
 	const channel = compilationConfig.channelName;
-	const clipCount = compilationConfig.clipCount;
+	const clipCount: string = compilationConfig.clipCount.toString();
 	const period = compilationConfig.period;
 	const trending = compilationConfig.trending;
 	const language = compilationConfig.language;
+	const editing = compilationConfig.editing;
+
 	let apiUrl = `https://api.twitch.tv/kraken/clips/top?channel=${channel}&period=${period}&trending=${trending}&limit=${clipCount}`;
 	apiUrl += language.length > 0 ? `&language=${language}` : '';
 	axios
@@ -165,7 +167,7 @@ async function run(): Promise<any> {
 				//				console.log(clip);
 				const thumbUrl = clip.thumbnails.medium;
 				const dlUrl = thumbUrl.substring(0, thumbUrl.indexOf('-preview')) + '.mp4';
-				console.log(`Clip ${i}`);
+				console.log(`\nClip ${i}`);
 				console.log(`\t Channel :  ${clip.broadcaster.display_name}`);
 				console.log(`\t Title :  ${clip.title}`);
 				console.log(`\t Game: ${clip.game}`);
@@ -175,12 +177,13 @@ async function run(): Promise<any> {
 				const downloadMsg = await downloadClip(path, dlUrl);
 				console.log(downloadMsg.green);
 
-				const editMsg = await editVideo(path, filename, clip);
-				console.log(editMsg.green);
-
-				console.log(`Downloaded and edited. ${i} \n \n`.green);
+				if (editing) {
+					const editMsg = await editVideo(path, filename, clip);
+					console.log(editMsg.green);
+				}
 			}
-			const mergedMsg = await mergeVideos();
+			const folderToMerge = editing ? Folder.edited : Folder.raw;
+			const mergedMsg = await mergeVideos(folderToMerge);
 			console.log(mergedMsg.green);
 		})
 		.catch((error) => {
