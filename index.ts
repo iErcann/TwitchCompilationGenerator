@@ -24,6 +24,7 @@ interface ICompilationConfig {
 	trending: boolean;
 	language: string;
 	editing: boolean;
+	game: string;
 }
 
 axios.defaults.headers.common['Client-ID'] = client_id;
@@ -151,9 +152,17 @@ async function run(): Promise<any> {
 	const trending = compilationConfig.trending;
 	const language = compilationConfig.language;
 	const editing = compilationConfig.editing;
+	const game = compilationConfig.game;
 
-	let apiUrl = `https://api.twitch.tv/kraken/clips/top?channel=${channel}&period=${period}&trending=${trending}&limit=${clipCount}`;
+	let apiUrl = `https://api.twitch.tv/kraken/clips/top?period=${period}&trending=${trending}&limit=${clipCount}`;
 	apiUrl += language.length > 0 ? `&language=${language}` : '';
+	apiUrl += channel.length > 0 ? `&channel=${channel}` : '';
+	apiUrl += game.length > 0 ? `&game=${game}` : '';
+	
+	console.log(compilationConfig);
+	if (game.length && channel.length) {
+		console.log('Both channel and game are specified, game is ignored.'.red)
+	}
 	axios
 		.get(apiUrl, {})
 		.then(async (res) => {
