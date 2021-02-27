@@ -72,7 +72,6 @@ function getResolution(path: string): Promise<IResolution> {
 
 async function hasDefaultResolution(path: string, wantedResolution: IResolution): Promise<boolean> {
 	const resolution = await getResolution(path);
-	console.log(resolution);
 	return !(resolution.width != wantedResolution.width || resolution.height != wantedResolution.height);
 }
 
@@ -137,8 +136,8 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 				progressBar.stop();
 				resolve('Edition finished');
 			})
-			.on('start', (cmdline) => {
-				console.log(cmdline);
+			.on('start', () => {
+				//console.log(cmdline);
 				console.log('Clip edit progress '.cyan);
 				progressBar.start(100, 0);
 			})
@@ -199,8 +198,8 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 			.on('progress', (info) => {
 				progressBar.update(Number(info.percent.toFixed(2)));
 			})
-			.on('start', (cmdline) => {
-				console.log(cmdline);
+			.on('start', () => {
+				//console.log(cmdline);
 				progressBar.start(100, 0);
 			});
 
@@ -235,7 +234,7 @@ async function run(): Promise<any> {
 	apiUrl += channel.length > 0 ? `&channel=${channel}` : '';
 	apiUrl += game.length > 0 ? `&game=${game}` : '';
 
-	console.log(compilationConfig);
+	console.log(`Your config: ${compilationConfig}`);
 	if (game.length && channel.length) {
 		console.log('Both channel and game are specified, game is ignored.'.red);
 	}
