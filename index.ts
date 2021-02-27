@@ -14,8 +14,9 @@ enum Folder {
 	merged = 'merged_video',
 	edited = 'edited_videos',
 	raw = 'raw_videos',
-	data = 'data_videos' 
+	data = 'data_videos',
 }
+const UNVERIFIED_RESOLUTION_PREFIX: string = '_';
 
 export const enum PopularGames {
 	CSGO = 'Counter Strike: Global Offensive',
@@ -38,6 +39,10 @@ export interface ICompilationConfig {
 axios.defaults.headers.common['Client-ID'] = client_id;
 axios.defaults.headers.common['Accept'] = 'application/vnd.twitchtv.v5+json';
 
+function clean(str: string): string {
+	return str.replace(/[^0-9a-z-A-Z ]/g, '').replace(/ +/, ' ');
+}
+
 function resetFolders(): void {
 	for (const [key, value] of Object.entries(Folder)) {
 		if (fs.existsSync(value)) {
@@ -46,23 +51,63 @@ function resetFolders(): void {
 		fs.mkdirSync(value);
 	}
 }
+interface IResolution {
+	width: number;
+	height: number;
+}
+
+const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
+function getResolution(path: string): Promise<IResolution> {
+	return new Promise<IResolution>((resolve) => {
+		ffmpeg.ffprobe(path, (err: Error, metadata: any) => {
+			if (err) {
+				console.error(err);
+			} else {
+				const stream = metadata.streams[0];
+				resolve({ width: stream.width, height: stream.height });
+			}
+		});
+	});
+}
+
+async function hasDefaultResolution(path: string, wantedResolution: IResolution): Promise<boolean> {
+	const resolution = await getResolution(path);
+	console.log(resolution);
+	return !(resolution.width != wantedResolution.width || resolution.height != wantedResolution.height);
+}
+
+function setResolution(path: string, newPath: string, wantedResolution: IResolution): Promise<string> {
+	return new Promise((resolve) => {
+		ffmpeg(path)
+			.videoFilters([
+				{
+					filter: 'scale',
+					options: `${wantedResolution.width}:${wantedResolution.height}`,
+				},
+			])
+			.on('end', () => {
+				resolve('done');
+			})
+			.save(newPath);
+	});
+}
 
 function downloadClip(path: string, dlUrl: string): Promise<string> {
 	const file: fs.WriteStream = fs.createWriteStream(path);
 
 	return new Promise((resolve) => {
 		https.get(dlUrl, (response: IncomingMessage) => {
-			response.pipe(file);
 			const contentLength: number = parseInt(response.headers['content-length'] as string);
-			console.log('Clip download progress '.cyan);
 			const opt = {
 				format: '[{bar}] {percentage}% | ETA: {eta}s | {value}/{total} bytes'.cyan,
 			};
 			const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
+			console.log('Clip download progress '.cyan);
 			progressBar.start(contentLength, 0);
-			let logTimer = setInterval(() => {
+			const logTimer = setInterval(() => {
 				progressBar.update(file.bytesWritten);
 			}, 1000);
+			response.pipe(file);
 			file.on('finish', () => {
 				progressBar.update(contentLength);
 				clearInterval(logTimer);
@@ -74,7 +119,6 @@ function downloadClip(path: string, dlUrl: string): Promise<string> {
 }
 
 function editVideo(originalPath: string, filename: string, clipData): Promise<string> {
-	console.log('Clip edit progress '.cyan);
 	const opt = {
 		format: '[{bar}] {percentage}% | ETA: {eta}s'.cyan,
 	};
@@ -93,11 +137,16 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 				progressBar.stop();
 				resolve('Edition finished');
 			})
-			.on('start', () => {
+			.on('start', (cmdline) => {
+				console.log(cmdline);
+				console.log('Clip edit progress '.cyan);
 				progressBar.start(100, 0);
 			})
-
 			.videoFilters([
+				{
+					filter: 'scale',
+					options: '1920:1080',
+				},
 				{
 					filter: 'drawtext',
 					options: {
@@ -148,9 +197,10 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 				resolve('Merge finished.');
 			})
 			.on('progress', (info) => {
-				 progressBar.update(Number(info.percent.toFixed(2)));
+				progressBar.update(Number(info.percent.toFixed(2)));
 			})
-			.on('start', () => {
+			.on('start', (cmdline) => {
+				console.log(cmdline);
 				progressBar.start(100, 0);
 			});
 
@@ -197,8 +247,11 @@ async function run(): Promise<any> {
 
 			for (let i = 0; i < clips.length; i++) {
 				const filename = `${i}`;
-				const path = `${Folder.raw}/${filename}.mp4`;
+				const path = `${Folder.raw}/${UNVERIFIED_RESOLUTION_PREFIX}${filename}.mp4`;
+				const newPath = `${Folder.raw}/${filename}.mp4`;
 				const clip = clips[i];
+				clip.title = clean(clip.title);
+
 				const thumbUrl = clip.thumbnails.medium;
 				const dlUrl = thumbUrl.substring(0, thumbUrl.indexOf('-preview')) + '.mp4';
 				console.log(`\nClip ${i}`);
@@ -206,19 +259,27 @@ async function run(): Promise<any> {
 				console.log(`\t Title :  ${clip.title}`);
 				console.log(`\t Game: ${clip.game}`);
 				console.log(`\t Views: ${clip.views}`);
-				
+
 				//console.log(clip);
 				const downloadMsg = await downloadClip(path, dlUrl);
 				console.log(downloadMsg.green);
-				
+
+				const resolutionIsOk: boolean = await hasDefaultResolution(path, DEFAULT_RESOLUTION);
+				if (!resolutionIsOk) {
+					await setResolution(path, newPath, DEFAULT_RESOLUTION);
+				} else {
+					fs.rename(path, newPath, function (err) {
+						if (err) console.log('ERROR: ' + err);
+					});
+				}
+
 				if (editing) {
-					const editMsg = await editVideo(path, filename, clip);
+					const editMsg = await editVideo(newPath, filename, clip);
 					console.log(editMsg.green);
-				} 
+				}
 				if (log) {
 					fs.writeFileSync(`${Folder.data}/${filename}.json`, JSON.stringify(clip));
 				}
-					
 			}
 			const folderToMerge = editing ? Folder.edited : Folder.raw;
 			const mergedMsg = await mergeVideos(folderToMerge);
