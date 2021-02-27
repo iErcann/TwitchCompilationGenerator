@@ -203,10 +203,11 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 			.on('progress', (info) => {
 				progressBar.update(Number(info.percent.toFixed(2)));
 			})
-			.on('start', () => {
-				//console.log(cmdline);
+			.on('start', (cmdline) => {
+				console.log(cmdline);
 				progressBar.start(100, 0);
-			});
+			}) 
+
 
 		const directoryPath = path.join(__dirname, folderToMerge);
 		console.log('\nMerge started.'.cyan);
@@ -217,6 +218,7 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 			files.forEach((file: string) => {
 				proc.input(`${folderToMerge}/${file}`);
 			});
+			proc.inputOption('-vsync 2');
 			proc.mergeToFile(`${Folder.merged}/merged.mp4`);
 		});
 	});

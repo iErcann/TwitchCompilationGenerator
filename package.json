@@ -6,7 +6,6 @@
   "scripts": {
     "start": "run-s main:build main:start",
     "gameSearch": "run-s gameSearch:build gameSearch:start",
-
     "main:build": "npx tsc index.ts",
     "main:start": "node index.js",
     "gameSearch:build": "npx tsc gameSearch.ts",
