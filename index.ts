@@ -19,7 +19,7 @@ enum Folder {
 const UNVERIFIED_RESOLUTION_PREFIX: string = '_';
 
 export const enum PopularGames {
-	CSGO = 'Counter Strike: Global Offensive',
+	CSGO = 'Counter-Strike: Global Offensive',
 	JustChatting = 'Just Chatting',
 	GTA5 = 'Grand Theft Auto V',
 	LOL = 'League of Legends',
@@ -85,7 +85,12 @@ function setResolution(path: string, newPath: string, wantedResolution: IResolut
 				},
 			])
 			.on('end', () => {
-				resolve('done');
+				try { 
+					fs.unlinkSync(path)
+				} catch (err) {
+					console.error(err)
+				}
+				resolve('Resolution changed.');
 			})
 			.save(newPath);
 	});
@@ -101,7 +106,7 @@ function downloadClip(path: string, dlUrl: string): Promise<string> {
 				format: '[{bar}] {percentage}% | ETA: {eta}s | {value}/{total} bytes'.cyan,
 			};
 			const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
-			console.log('Clip download progress '.cyan);
+			console.log('\nClip download progress '.cyan);
 			progressBar.start(contentLength, 0);
 			const logTimer = setInterval(() => {
 				progressBar.update(file.bytesWritten);
@@ -138,7 +143,7 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 			})
 			.on('start', () => {
 				//console.log(cmdline);
-				console.log('Clip edit progress '.cyan);
+				console.log('\nClip edit progress '.cyan);
 				progressBar.start(100, 0);
 			})
 			.videoFilters([
@@ -234,7 +239,9 @@ async function run(): Promise<any> {
 	apiUrl += channel.length > 0 ? `&channel=${channel}` : '';
 	apiUrl += game.length > 0 ? `&game=${game}` : '';
 
-	console.log(`Your config: ${compilationConfig}`);
+	console.log(apiUrl);
+	console.log(compilationConfig);
+
 	if (game.length && channel.length) {
 		console.log('Both channel and game are specified, game is ignored.'.red);
 	}
@@ -242,7 +249,7 @@ async function run(): Promise<any> {
 		.get(apiUrl, {})
 		.then(async (res) => {
 			const clips = res.data.clips;
-			console.log('GET request finished.'.green);
+			console.log('\n GET request finished.'.green);
 
 			for (let i = 0; i < clips.length; i++) {
 				const filename = `${i}`;
@@ -253,7 +260,7 @@ async function run(): Promise<any> {
 
 				const thumbUrl = clip.thumbnails.medium;
 				const dlUrl = thumbUrl.substring(0, thumbUrl.indexOf('-preview')) + '.mp4';
-				console.log(`\nClip ${i}`);
+				console.log(`\n Clip ${i} -------------`);
 				console.log(`\t Channel :  ${clip.broadcaster.display_name}`);
 				console.log(`\t Title :  ${clip.title}`);
 				console.log(`\t Game: ${clip.game}`);
@@ -265,6 +272,7 @@ async function run(): Promise<any> {
 
 				const resolutionIsOk: boolean = await hasDefaultResolution(path, DEFAULT_RESOLUTION);
 				if (!resolutionIsOk) {
+					console.log(`Different resolution detected, scaling it to ${DEFAULT_RESOLUTION.width}:${DEFAULT_RESOLUTION.height}..`.cyan);
 					await setResolution(path, newPath, DEFAULT_RESOLUTION);
 				} else {
 					fs.rename(path, newPath, function (err) {
