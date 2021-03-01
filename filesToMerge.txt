@@ -1,3 +1,0 @@
-file raw_videos/0.mp4 
-file raw_videos/1.mp4 
-file raw_videos/2.mp4 
