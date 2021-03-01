@@ -4,10 +4,12 @@ export const client_id = '';
 export const compilationConfig: ICompilationConfig = {
 	channelName:  '' ,  
 	period: 'month', // day, week or month
-    clipCount: 20,  
+    clipCount: 10,  
     trending: false, // If true, the clips are ordered by popularity; otherwise, by viewcount. 
     language: '',  
-    editing: true,
+    editing: false,
     game: PopularGames.CSGO, 
-    log: false  
+    log: false,
+    introPath: 'intro.mp4',
+    outroPath: 'outro.mp4' 
 };

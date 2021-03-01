@@ -16,7 +16,7 @@ enum Folder {
 	raw = 'raw_videos',
 	data = 'data_videos',
 }
-const UNVERIFIED_RESOLUTION_PREFIX: string = '_';
+const UNVERIFIED_RESOLUTION_PREFIX = '_';
 
 export const enum PopularGames {
 	CSGO = 'Counter-Strike: Global Offensive',
@@ -34,6 +34,9 @@ export interface ICompilationConfig {
 	editing: boolean;
 	game: string;
 	log: boolean;
+	introPath: string;
+	outroPath: string;
+
 }
 
 axios.defaults.headers.common['Client-ID'] = client_id;
@@ -60,6 +63,7 @@ const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
 function getResolution(path: string): Promise<IResolution> {
 	return new Promise<IResolution>((resolve) => {
 		ffmpeg.ffprobe(path, (err: Error, metadata: any) => {
+			console.log(metadata);
 			if (err) {
 				console.error(err);
 			} else {
@@ -85,7 +89,7 @@ function setResolution(path: string, newPath: string, wantedResolution: IResolut
 				},
 			])
 			.on('end', () => {
-				try { 
+				try {
 					fs.unlinkSync(path)
 				} catch (err) {
 					console.error(err)
@@ -142,7 +146,6 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 				resolve('Edition finished');
 			})
 			.on('start', () => {
-				//console.log(cmdline);
 				console.log('\nClip edit progress '.cyan);
 				progressBar.start(100, 0);
 			})
@@ -188,6 +191,46 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 	});
 }
 function mergeVideos(folderToMerge: string): Promise<string> {
+	
+/* 
+	const opt = {
+		format: '[{bar}] {percentage}% | ETA: {eta}s '.cyan,
+	};
+	const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
+	const directoryPath = path.join(__dirname, folderToMerge);
+
+	return new Promise((resolve) => {
+		fs.readdir(directoryPath, (err, files: string[]) => {
+			if (err) {
+				return console.log('Unable to scan directory: ' + err);
+			}
+
+			let fileNames = '';
+			const mergeFileName = 'filesToMerge.txt'
+			files.forEach((file: string) => {
+				fileNames += `file ${folderToMerge}/${file} \n`;
+			});
+
+			fs.writeFileSync(mergeFileName, fileNames);
+
+			const proc = ffmpeg();
+			proc.input(mergeFileName).inputOptions(['-f concat', '-safe 0']).outputOptions('-c copy').save(`${Folder.merged}/merged.mp4`).on('end', () => {
+				progressBar.update(100);
+				progressBar.stop();
+				resolve('Merge finished.');
+			})
+				.on('progress', (info: any) => {
+					if (info.percent)
+						progressBar.update(Number(info.percent.toFixed(2)));
+				})
+				.on('start', (cmdline: string) => {
+					console.log(cmdline);
+					progressBar.start(100, 0);
+				})
+
+		});
+	}); */
+
 	const opt = {
 		format: '[{bar}] {percentage}% | ETA: {eta}s '.cyan,
 	};
@@ -203,10 +246,10 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 			.on('progress', (info) => {
 				progressBar.update(Number(info.percent.toFixed(2)));
 			})
-			.on('start', (cmdline) => {
+			.on('start', (cmdline: string) => {
 				console.log(cmdline);
 				progressBar.start(100, 0);
-			}) 
+			})
 
 
 		const directoryPath = path.join(__dirname, folderToMerge);
@@ -215,13 +258,25 @@ function mergeVideos(folderToMerge: string): Promise<string> {
 			if (err) {
 				return console.log('Unable to scan directory: ' + err);
 			}
-			files.forEach((file: string) => {
-				proc.input(`${folderToMerge}/${file}`);
-			});
+			// Intro
+			if (compilationConfig.introPath.length > 0) proc.input(compilationConfig.introPath);
+
+			// Clips
+			files = files.sort((first, second) => first.localeCompare(second))
+			console.log(files)
+			for (let i = 0; i < files.length; i++) {
+				proc.input(`${folderToMerge}/${files[i]}`);
+
+			}
+			// Outro
+			if (compilationConfig.introPath.length > 0) proc.input(compilationConfig.outroPath);
+
 			proc.inputOption('-vsync 2');
 			proc.mergeToFile(`${Folder.merged}/merged.mp4`);
 		});
 	});
+
+
 }
 
 async function run(): Promise<any> {
@@ -252,7 +307,7 @@ async function run(): Promise<any> {
 		.then(async (res) => {
 			const clips = res.data.clips;
 			console.log('\n GET request finished.'.green);
-
+			console.log(`${clips.length} clips detected`);
 			for (let i = 0; i < clips.length; i++) {
 				const filename = `${i}`;
 				const path = `${Folder.raw}/${UNVERIFIED_RESOLUTION_PREFIX}${filename}.mp4`;
@@ -262,7 +317,7 @@ async function run(): Promise<any> {
 
 				const thumbUrl = clip.thumbnails.medium;
 				const dlUrl = thumbUrl.substring(0, thumbUrl.indexOf('-preview')) + '.mp4';
-				console.log(`\n Clip ${i} -------------`);
+				console.log(`\n Clip ${i + 1} -------------`);
 				console.log(`\t Channel :  ${clip.broadcaster.display_name}`);
 				console.log(`\t Title :  ${clip.title}`);
 				console.log(`\t Game: ${clip.game}`);

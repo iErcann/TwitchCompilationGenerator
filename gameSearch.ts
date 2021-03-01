@@ -1,4 +1,4 @@
-import { client_id, compilationConfig } from './config';
+import { client_id } from './config';
 import axios from 'axios';
 import * as readline from 'readline';
 
