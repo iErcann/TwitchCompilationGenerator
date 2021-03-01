@@ -191,46 +191,6 @@ function editVideo(originalPath: string, filename: string, clipData): Promise<st
 	});
 }
 function mergeVideos(folderToMerge: string): Promise<string> {
-	
-/* 
-	const opt = {
-		format: '[{bar}] {percentage}% | ETA: {eta}s '.cyan,
-	};
-	const progressBar = new cliProgress.SingleBar(opt, cliProgress.Presets.shades_classic);
-	const directoryPath = path.join(__dirname, folderToMerge);
-
-	return new Promise((resolve) => {
-		fs.readdir(directoryPath, (err, files: string[]) => {
-			if (err) {
-				return console.log('Unable to scan directory: ' + err);
-			}
-
-			let fileNames = '';
-			const mergeFileName = 'filesToMerge.txt'
-			files.forEach((file: string) => {
-				fileNames += `file ${folderToMerge}/${file} \n`;
-			});
-
-			fs.writeFileSync(mergeFileName, fileNames);
-
-			const proc = ffmpeg();
-			proc.input(mergeFileName).inputOptions(['-f concat', '-safe 0']).outputOptions('-c copy').save(`${Folder.merged}/merged.mp4`).on('end', () => {
-				progressBar.update(100);
-				progressBar.stop();
-				resolve('Merge finished.');
-			})
-				.on('progress', (info: any) => {
-					if (info.percent)
-						progressBar.update(Number(info.percent.toFixed(2)));
-				})
-				.on('start', (cmdline: string) => {
-					console.log(cmdline);
-					progressBar.start(100, 0);
-				})
-
-		});
-	}); */
-
 	const opt = {
 		format: '[{bar}] {percentage}% | ETA: {eta}s '.cyan,
 	};

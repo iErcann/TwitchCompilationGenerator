@@ -10,6 +10,6 @@ export const compilationConfig: ICompilationConfig = {
     editing: false,
     game: PopularGames.CSGO, 
     log: false,
-    introPath: 'intro.mp4',
-    outroPath: 'outro.mp4' 
+    introPath: '',
+    outroPath: '' 
 };
