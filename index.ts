@@ -63,7 +63,6 @@ const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
 function getResolution(path: string): Promise<IResolution> {
 	return new Promise<IResolution>((resolve) => {
 		ffmpeg.ffprobe(path, (err: Error, metadata: any) => {
-			console.log(metadata);
 			if (err) {
 				console.error(err);
 			} else {
