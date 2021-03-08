@@ -28,6 +28,7 @@
     "@types/node": "^14.14.31",
     "axios": "^0.21.1",
     "cli-progress": "^3.9.0",
+    "dotenv": "^8.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "https": "^1.0.0",

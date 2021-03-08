@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Search from  "@/components/Search.vue";
+import Search from  "@/views/Search.vue";
 @Component({
   components: {
     Search,
