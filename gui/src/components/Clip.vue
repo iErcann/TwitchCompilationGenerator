@@ -4,7 +4,7 @@
       src="https://clips-media-assets2.twitch.tv/AT-cm%7C1070286972-preview-480x272.jpg"
     />
 
-    <v-card-title class="white--text title">
+    <v-card-title class="title">
       <v-avatar size="50">
         <img
           alt="user"
@@ -12,7 +12,7 @@
         />
       </v-avatar>
       <a
-        class="ml-3 ma-0 pa-0 body-1"
+        class="ml-3 ma-0 pa-0 body-1 white--text"
         style="font-weight: bold; cursor: pointer; text-decoration: none"
         href="https://www.twitch.tv/blacoiso/videos"
       >

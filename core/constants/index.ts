@@ -37,3 +37,8 @@ export interface IResolution {
 export const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
 
 
+
+
+
+
+

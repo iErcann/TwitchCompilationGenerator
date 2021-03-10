@@ -1,6 +1,7 @@
 import { ICompilationConfig } from './constants';
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { compilationConfig } from '../config';
 
 dotenv.config();
 
@@ -28,3 +29,6 @@ export async function queryClips(compilationConfig: ICompilationConfig) {
 	const clips = queryResult.data.clips;
 	return clips;
 }
+
+
+queryClips(compilationConfig).then((clips)=> console.log(clips[0]));
