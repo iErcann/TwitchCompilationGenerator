@@ -1,3 +1,6 @@
+import {   IResolution } from "../types";
+import * as path from 'path';
+
 export const UNVERIFIED_RESOLUTION_PREFIX = '_';
 
 export const enum PopularGames {
@@ -7,38 +10,23 @@ export const enum PopularGames {
 	LOL = 'League of Legends',
 	WOW = 'World of Warcraft',
 }
-export interface ICompilationConfig {
-	channelName: string;
-	clipCount: number;
-	period: string;
-	trending: boolean;
-	language: string;
-	editing: boolean;
-	game: string;
-	log: boolean;
-	introPath: string;
-	outroPath: string;
-}
-
-const OUTPUT_FOLDER_LOCATION = '../';
-export enum Folder {
-	merged = 'merged_video',
-	edited = 'edited_videos',
-	raw = 'raw_videos',
-	data = 'data_videos',
+ 
+export const Folders  =  {
+	merged: path.resolve('merged_video'),
+	edited: path.resolve('edited_videos'),
+	raw: path.resolve('raw_videos'),
+	data: path.resolve('data_videos'),
 }
 
 
-export interface IResolution {
-	width: number;
-	height: number;
-}
+console.log(Folders)
+ 
 
 export const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
 
 
+ 
 
 
 
-
-
+ 

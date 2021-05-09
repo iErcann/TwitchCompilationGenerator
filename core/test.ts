@@ -1,4 +1,19 @@
-import { Clip } from "./classes/Clip";
+import { axios } from "./config/axios"
+import { ClipData } from "./types";
+
+
+
+async function main(){
+  let apiUrl = `https://api.twitch.tv/kraken/clips/BumblingShortAxeVoteYea`;
+  const queryResult: ClipData = await axios.get(apiUrl, {});
+  console.log(queryResult)
+} 
+
+main();
+
+
+
+/* import { Clip } from "./classes/Clip";
 import { ICompilationConfig, PopularGames } from "./constants";
 import * as colors from 'colors';
 
@@ -91,4 +106,7 @@ export const compilationConfig: ICompilationConfig = {
 };
 
 
-Clip.queryClips(compilationConfig);
+const arrayClipDatas  =  Clip.queryClips(compilationConfig);
+console.log(arrayClipDatas);
+
+ */

@@ -22,7 +22,7 @@
     </v-app-bar>
 
     <v-main >
-      <Main />
+      <router-view class="view one"></router-view>
     </v-main>
  
 

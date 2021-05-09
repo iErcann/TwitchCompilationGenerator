@@ -1,12 +1,12 @@
-import { ICompilationConfig } from './constants';
-import axios from 'axios';
-import * as dotenv from 'dotenv';
-import { compilationConfig } from '../config';
+import { ICompilationConfig } from "./constants";
+import axios from "axios";
+import * as dotenv from "dotenv";
+import { compilationConfig } from "../config";
 
 dotenv.config();
 
-axios.defaults.headers.common['Client-ID'] = process.env.CLIENT_ID;
-axios.defaults.headers.common['Accept'] = 'application/vnd.twitchtv.v5+json';
+axios.defaults.headers.common["Client-ID"] = process.env.CLIENT_ID;
+axios.defaults.headers.common["Accept"] = "application/vnd.twitchtv.v5+json";
 
 export async function queryClips(compilationConfig: ICompilationConfig) {
 	const channel = compilationConfig.channelName;
@@ -17,13 +17,13 @@ export async function queryClips(compilationConfig: ICompilationConfig) {
 	const game = compilationConfig.game;
 
 	if (game.length && channel.length) {
-		console.log('Both channel and game are specified, game is ignored.'.red);
+		console.log("Both channel and game are specified, game is ignored.".red);
 	}
 
 	let apiUrl = `https://api.twitch.tv/kraken/clips/top?period=${period}&trending=${trending}&limit=${clipCount}`;
-	apiUrl += language.length > 0 ? `&language=${language}` : '';
-	apiUrl += channel.length > 0 ? `&channel=${channel}` : '';
-	apiUrl += game.length > 0 ? `&game=${game}` : '';
+	apiUrl += language.length > 0 ? `&language=${language}` : "";
+	apiUrl += channel.length > 0 ? `&channel=${channel}` : "";
+	apiUrl += game.length > 0 ? `&game=${game}` : "";
 
 	const queryResult = await axios.get(apiUrl, {});
 	const clips = queryResult.data.clips;

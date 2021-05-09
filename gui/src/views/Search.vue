@@ -2,16 +2,14 @@
   <div class="search">
     <v-container>
       <div class="d-flex flex-column mb-6">
-        <v-card-actions class="justify-center">
-          <v-btn class="ma-1" width="50%" color="accent" outlined>
-            Search
-          </v-btn>
-        </v-card-actions>
-
+        <SearchComponent />
         <v-container class="mt-5">
           <v-row class="justify-center">
-            <template v-for="n in 100">
-              <Clip :key="n" />
+            <template v-for="(clipData, i) in clips">
+              <ClipComponent
+                :clipData="clipData"
+                :key="i"
+              />
             </template>
           </v-row>
         </v-container>
@@ -31,11 +29,17 @@
           transform: translate(-50%, 0%);
         "
       >
-        <v-btn style="width: 100%; height: 100%" color="accent">
+        <v-btn
+          style="width: 100%; height: 100%"
+          color="accent"
+        >
           <span>ADD SELECTED CLIPS</span>
           <v-icon>mdi-table-plus </v-icon>
         </v-btn>
-        <v-btn style="width: 100%; height: 100%" color="accent">
+        <v-btn
+          style="width: 100%; height: 100%"
+          color="accent"
+        >
           <span> EDIT </span>
           <v-icon> mdi-arrow-right-bold-box-outline</v-icon>
         </v-btn>
@@ -53,19 +57,40 @@
   width: 600px;
   height: 200px;
   right: 50%;
-  margin-left: 300px; /*half the width*/
+  margin-left: 300px;
 }
 </style>
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Clip from "@/components/Clip.vue";
+import ws from "../services/websocket";
+import ClipComponent from "@/components/ClipComponent.vue";
+import SearchComponent from "@/components/SearchComponent.vue";
+
+import {
+  IAutomaticCompilationConfig,
+  ICompilationConfig,
+  ClipData,
+  NetworkMessage,
+} from "../../../core/types/index";
 
 @Component({
   components: {
-    Clip,
+    ClipComponent,
+    SearchComponent,
   },
 })
 export default class Search extends Vue {
+  mounted() {
+    ws.onmessage = (event) => {
+      const response: NetworkMessage = JSON.parse(event.data);
+      console.log(response);
+      if (response.header === "clipSearchResult") {
+        this.clips = response.data as Array<ClipData>;
+      }
+    };
+  }
+  private clips: Array<ClipData> = [];
+
   checkbox = true;
 }
 </script>
