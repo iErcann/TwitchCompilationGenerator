@@ -6,9 +6,12 @@
         <v-container class="mt-5">
           <v-row class="justify-center">
             <template v-for="(clipData, i) in clips">
+
               <ClipComponent
+                v-if="!isAlreadySelected(clipData)"
                 :clipData="clipData"
                 :key="i"
+                ref="clipComponent"
               />
             </template>
           </v-row>
@@ -32,6 +35,7 @@
         <v-btn
           style="width: 100%; height: 100%"
           color="accent"
+          @click="addSelectedClips"
         >
           <span>ADD SELECTED CLIPS</span>
           <v-icon>mdi-table-plus </v-icon>
@@ -39,6 +43,7 @@
         <v-btn
           style="width: 100%; height: 100%"
           color="accent"
+          @click="$router.push({path: '/edit', params:  {selectedClips}})"
         >
           <span> EDIT </span>
           <v-icon> mdi-arrow-right-bold-box-outline</v-icon>
@@ -61,7 +66,7 @@
 }
 </style>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
 import ws from "../services/websocket";
 import ClipComponent from "@/components/ClipComponent.vue";
 import SearchComponent from "@/components/SearchComponent.vue";
@@ -80,6 +85,7 @@ import {
   },
 })
 export default class Search extends Vue {
+  @Prop() selectedClips!: Array<ClipData>;
   mounted() {
     ws.onmessage = (event) => {
       const response: NetworkMessage = JSON.parse(event.data);
@@ -89,8 +95,24 @@ export default class Search extends Vue {
       }
     };
   }
-  private clips: Array<ClipData> = [];
+  private addSelectedClips(): void {
+    console.log(this.$refs.clipComponent);
+    const clipComponent: Array<any> = this.$refs.clipComponent as any;
+    for (let i = 0; i < clipComponent.length; i++) {
+      if (clipComponent[i].selected) {
+        this.selectedClips.push(clipComponent[i].clipData as ClipData);
+      }
+    }
+    console.log(this.selectedClips);
+  }
+  private isAlreadySelected(clipData: ClipData): boolean {
+    return this.selectedClips.some(
+      (_clipData) => _clipData.tracking_id === clipData.tracking_id
+    );
+  }
 
+  private clips: Array<ClipData> = [];
+  //private selectedClips: Array<ClipData> = [];
   checkbox = true;
 }
 </script>

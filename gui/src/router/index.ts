@@ -2,6 +2,7 @@ import Vue from "vue"
 import VueRouter, { RouteConfig } from "vue-router"
 import Main from "../views/Main.vue"
 import Search from "../views/Search.vue"
+import Edition from "../views/Edition.vue"
 
 Vue.use(VueRouter)
 
@@ -23,7 +24,11 @@ const routes: Array<RouteConfig> = [
     path: "/search",
     name: "Search",
     component: Search
-
+  },
+  {
+    path: "/edit", 
+    name: "Editition", 
+    component: Edition
   }
   
 ]

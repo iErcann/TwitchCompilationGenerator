@@ -92,7 +92,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ClipData, IAutomaticCompilationConfig } from "../../../core/types";
+import { ClipData, IAutomaticCompilationConfig, NetworkMessage } from "../../../core/types";
 import ws from "../services/websocket";
 
 @Component
@@ -119,7 +119,7 @@ export default class SearchComponent extends Vue {
       editing: false,
     };
 
-    let request = {
+    let request : NetworkMessage= {
       header: "clipSearch",
       data: config,
     };

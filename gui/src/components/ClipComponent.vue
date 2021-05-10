@@ -19,17 +19,16 @@
         />
       </v-avatar>
       <a
-        class="ml-3 ma-0 pa-0 body-1 white--text"
-        style="font-weight: bold; cursor: pointer; text-decoration: none"
+        class="ml-3 ma-0 pa-0 body-1 white--text title"
         :href="clipData.url"
         target="_blank"
       >
         {{ trim(clipData.title, 45) }}
-        <v-icon
+        <!--         <v-icon
           large
-          color="accent"
           small
         > mdi-arrow-up-bold </v-icon>
+ -->
       </a>
     </v-card-title>
     <v-card-text class="text-center body-1 ma-0 pa-0">
@@ -81,11 +80,16 @@ export default class ClipComponent extends Vue {
 <style scoped>
 .title {
   flex-wrap: nowrap;
+  white-space: pre-wrap;
+  word-break: break-word;
+
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 29ch;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
 }
 #clickable {
-   cursor: pointer;
+  cursor: pointer;
 }
 </style>

@@ -22,7 +22,7 @@
     </v-app-bar>
 
     <v-main >
-      <router-view class="view one"></router-view>
+      <router-view :selectedClips="selectedClips"></router-view>
     </v-main>
  
 
@@ -32,11 +32,14 @@
  <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Main from "@/views/Main.vue"; // @ is an alias to /src
+import { ClipData } from "../../core/types";
 
 @Component({
   components: {
     Main,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+    private selectedClips : Array<ClipData> = [];
+}
 </script>

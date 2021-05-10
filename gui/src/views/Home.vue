@@ -12,13 +12,12 @@
           <v-btn
             outlined
             x-large
-             
-          > Manual </v-btn>
+          > Automatic </v-btn>
           <v-btn
             outlined
             x-large
             @click="$router.push({path: '/search'})"
-          > Automatic </v-btn>
+          > Manual </v-btn>
         </v-container>
       </v-card>
     </v-row>
