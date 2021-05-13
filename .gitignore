@@ -1,6 +1,6 @@
-*.txt
-*.mp4
-*.js
+/*.txt
+/*.mp4
+/*.js
 merged_video
 edited_videos
 raw_videos
@@ -89,7 +89,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+/dist
 
 # Gatsby files
 .cache/
