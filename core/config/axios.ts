@@ -8,7 +8,7 @@ dotenv.config();
 
 // axios.defaults.headers.common['Client-ID'] = process.env.CLIENT_ID;
 
-axios.defaults.headers.common['Client-ID'] = "your client id";
+axios.defaults.headers.common['Client-ID'] = "";
 axios.defaults.headers.common['Accept'] = 'application/vnd.twitchtv.v5+json';
 
 

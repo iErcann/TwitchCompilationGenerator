@@ -1,7 +1,6 @@
 import * as  express from "express";
 import * as path from "path";
 import * as WebSocket from "ws";
-import { manualCompilationConfig } from "./config";
 import { Clip } from "./core/classes/Clip";
 import { CompilationController } from "./core/classes/CompilationController";
 import { IAutomaticCompilationConfig, ICompilationConfig, IManualCompilationConfig } from "./core/types";
