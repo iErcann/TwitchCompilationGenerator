@@ -6,9 +6,9 @@
         <v-container class="mt-5">
           <v-row class="justify-center">
             <template v-for="(clipData, i) in clips">
-
               <ClipComponent
                 v-if="!isAlreadySelected(clipData)"
+                :searchPhase=true
                 :clipData="clipData"
                 :key="i"
                 ref="clipComponent"
@@ -40,10 +40,11 @@
           <span>ADD SELECTED CLIPS</span>
           <v-icon>mdi-table-plus </v-icon>
         </v-btn>
+
         <v-btn
           style="width: 100%; height: 100%"
           color="accent"
-          @click="$router.push({path: '/edit', params:  {selectedClips}})"
+          @click="$router.push({path: '/edit' })"
         >
           <span> EDIT </span>
           <v-icon> mdi-arrow-right-bold-box-outline</v-icon>

@@ -1,17 +1,32 @@
 <template>
   <v-card
     class="ma-3"
-    width="300"
+    width="250"
     style="border-radius: 10px 10px 30px 30px"
     :color="selected?'accent':'primary'"
   >
     <v-img
-      id="clickable"
+      :style="searchPhase?'cursor: pointer':''"
       :src="clipData.thumbnails.medium"
-      @click="selected=!selected"
-    />
+      @click="selected=!selected && searchPhase"
+    >
+
+      <template v-if="!searchPhase">
+        <v-btn color="red" @click="$emit('removed')" >
+          <v-icon dark>
+            mdi-close-box
+          </v-icon>
+        </v-btn>
+        <v-btn>
+          <v-icon dark>
+            mdi-download
+          </v-icon>
+        </v-btn>
+      </template>
+    </v-img>
 
     <v-card-title class="title">
+
       <v-avatar size="50">
         <img
           alt="user"
@@ -44,7 +59,9 @@ import { ClipData } from "../../../core/types";
 
 @Component
 export default class ClipComponent extends Vue {
+  @Prop() readonly searchPhase!: boolean;
   @Prop() readonly clipData!: ClipData;
+   
   private selected: boolean = false;
   private trim(str: string, length: number): string {
     let trimmedStr = str.substring(0, length);
@@ -88,8 +105,5 @@ export default class ClipComponent extends Vue {
   font-weight: bold;
   cursor: pointer;
   text-decoration: none;
-}
-#clickable {
-  cursor: pointer;
 }
 </style>

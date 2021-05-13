@@ -12,8 +12,8 @@ const WSPORT = 8081;
 
 const app = express();
 const wss = new WebSocket.Server({ port: WSPORT });
-/* app.use(express.static(path.join(__dirname, "/gui/dist")));
-app.listen(PORT); */
+app.use(express.static(path.join(__dirname, "/gui/dist")));
+app.listen(PORT);  
 
 console.log("Website started at http://localhost:" + PORT);
 

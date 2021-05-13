@@ -6,12 +6,12 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
     theme: {
-        dark: true ,
+        dark: true,
         themes: {
           light: {
-            primary: colors.purple,
+            primary: colors.deepPurple,
             secondary: colors.grey.darken1,
-            accent: colors.shades.black,
+            accent: colors.purple,
             error: colors.red.accent3,
           },
           dark: {

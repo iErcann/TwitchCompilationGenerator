@@ -21,7 +21,8 @@
       </v-btn>
     </v-app-bar>
 
-    <v-main >
+    <v-main           class="  align-center "
+> 
       <router-view :selectedClips="selectedClips"></router-view>
     </v-main>
  

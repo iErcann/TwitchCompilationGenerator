@@ -88,9 +88,8 @@ export class Clip {
 		});
 	}
 	rename(newPath: string) {
-		fs.rename(this.rawPath, newPath, function (err) {
-			if (err) console.log('ERROR: ' + err);
-		});
+		// Changed to sync rename
+		fs.renameSync(this.rawPath, newPath);
 		this.rawPath = newPath;
 	}
 	getResolution(): Promise<IResolution> {
@@ -107,7 +106,6 @@ export class Clip {
 	}
 
 	setResolution(newPath: string, wantedResolution: IResolution): Promise<string> {
-		this.rawPath = newPath;
 		return new Promise((resolve) => {
 			ffmpeg(this.rawPath)
 				.videoFilters([
@@ -118,8 +116,8 @@ export class Clip {
 				])
 				.on('end', () => {
 					try {
-						this.rawPath = newPath;
 						fs.unlinkSync(this.rawPath)
+						this.rawPath = newPath;
 					} catch (err) {
 						console.error(err)
 					}
