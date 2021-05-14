@@ -1,5 +1,7 @@
 ## Simple twitch compilation generator.
----
+![sample](sample.png)
+
+
 ## Install
     $ git clone git@github.com:iErcann/TwitchCompilationGenerator.git
     $ cd TwitchCompilationGenerator
