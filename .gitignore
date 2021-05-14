@@ -1,6 +1,6 @@
-*.txt
-*.mp4
-*.js
+/*.txt
+/*.mp4
+/*.js
 merged_video
 edited_videos
 raw_videos
@@ -69,7 +69,7 @@ web_modules/
 # Optional REPL history
 .node_repl_history
 
-# Output of 'npm pack'
+# Output of "npm pack"
 *.tgz
 
 # Yarn Integrity file
@@ -89,7 +89,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
+/dist
 
 # Gatsby files
 .cache/
