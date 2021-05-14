@@ -1,11 +1,9 @@
 import * as cliProgress from 'cli-progress';
 import ffmpeg from '../constants/ffmpeg';
-import * as path from 'path';
-import { ICompilationConfig, IAutomaticCompilationConfig, IManualCompilationConfig } from '../types';
+import { ICompilationConfig } from '../types';
 import * as fs from 'fs';
 import { DEFAULT_RESOLUTION, Folders, UNVERIFIED_RESOLUTION_PREFIX } from '../constants';
 import * as rimraf from 'rimraf'
-import axios from '../config/axios';
 import { Clip } from './Clip';
 
 
@@ -89,13 +87,12 @@ export class CompilationController {
                 .on('end', () => {
                     progressBar.update(100);
                     progressBar.stop();
-                    resolve('Merge finished.');
+                    resolve(`Merge finished, your video is ready at ${Folders.merged}`);
                 })
                 .on('progress', (info) => {
                     progressBar.update(Number(info.percent.toFixed(2)));
                 })
                 .on('start', (cmdline: string) => {
-                    console.log(cmdline);
                     progressBar.start(100, 0);
                 })
 

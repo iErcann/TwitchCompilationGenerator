@@ -21,11 +21,9 @@
       </v-btn>
     </v-app-bar>
 
-    <v-main           class="  align-center "
-> 
+    <v-main class="  align-center ">
       <router-view :selectedClips="selectedClips"></router-view>
     </v-main>
- 
 
   </v-app>
 </template>
@@ -41,6 +39,6 @@ import { ClipData } from "../../core/types";
   },
 })
 export default class App extends Vue {
-    private selectedClips : Array<ClipData> = [];
+  private selectedClips: Array<ClipData> = [];
 }
 </script>

@@ -3,7 +3,7 @@ import * as path from "path";
 import * as WebSocket from "ws";
 import { Clip } from "./core/classes/Clip";
 import { CompilationController } from "./core/classes/CompilationController";
-import { IAutomaticCompilationConfig, ICompilationConfig, IManualCompilationConfig } from "./core/types";
+import { IAutomaticCompilationConfig, ICompilationConfig, IManualCompilationConfig, NetworkMessage } from "./core/types";
 
 
 const PORT = 8080;
@@ -18,16 +18,14 @@ console.log("Website started at http://localhost:" + PORT);
 
 /**
  * TODO: Pas d'edit phase sans selected clips
- * 
- * 
  */
 
 
 
 wss.on("connection", (ws: WebSocket) => {
   ws.on("message", async (message: string) => {
-    console.log(message);
-    const obj = JSON.parse(message);
+    const obj : NetworkMessage = JSON.parse(message)   ;
+    console.log(obj.header);
     if (obj.header === "clipSearch") {
       const config = obj.data as IAutomaticCompilationConfig;
       const clipsData = await Clip.queryClipsData(config);
@@ -37,7 +35,6 @@ wss.on("connection", (ws: WebSocket) => {
       const compilationController = new CompilationController(config);
       compilationController.run();
     }
-    console.log("received: %s", message);
   });
 });
 

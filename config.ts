@@ -1,6 +1,8 @@
 import { PopularGames } from "./core/constants";
 import { IAutomaticCompilationConfig, IManualCompilationConfig, ICompilationConfig } from "./core/types";
 
+export const client_id = "YOUR CLIENT ID HERE";
+
 
 export const compilationConfig : IAutomaticCompilationConfig = {
     channelName: "xqcow", 
@@ -11,3 +13,7 @@ export const compilationConfig : IAutomaticCompilationConfig = {
     game: PopularGames.CSGO,
     log: true, 
 }
+
+
+
+

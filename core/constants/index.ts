@@ -19,7 +19,8 @@ export const Folders  =  {
 }
 
 
-console.log(Folders)
+console.log("Output folders: " )
+console.log(Folders);
  
 
 export const DEFAULT_RESOLUTION: IResolution = { width: 1920, height: 1080 };
