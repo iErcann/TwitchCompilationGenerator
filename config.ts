@@ -11,15 +11,3 @@ export const compilationConfig : IAutomaticCompilationConfig = {
     game: PopularGames.CSGO,
     log: true, 
 }
-
-
-/* 
-Manual config example:
-    export const manualCompilationConfig : IManualCompilationConfig = {
-        log: false,
-        editing: true,
-        clipsList: ["https://www.twitch.tv/antoinedaniellive/clip/UninterestedFreezingEmuWTRuck-RmhtVhoy_xrz52PJ?filter=clips&range=7d&sort=time", 
-        "https://www.twitch.tv/antoinedaniellive/clip/UninterestedEagerPuddingFailFish-h_i5D2Qj9djmzMR5",
-        "https://clips.twitch.tv/UninterestedEagerPuddingFailFish-h_i5D2Qj9djmzMR5"]
-    }
- */

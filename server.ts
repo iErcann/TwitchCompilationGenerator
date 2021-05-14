@@ -16,7 +16,11 @@ app.listen(PORT);
 
 console.log("Website started at http://localhost:" + PORT);
 
-
+/**
+ * TODO: Pas d'edit phase sans selected clips
+ * 
+ * 
+ */
 
 
 

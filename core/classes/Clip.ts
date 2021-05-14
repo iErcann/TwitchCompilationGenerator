@@ -2,10 +2,8 @@ import * as https from 'https';
 import { IncomingMessage } from 'http';
 import * as cliProgress from 'cli-progress';
 import * as fs from 'fs';
-import * as ffmpeg from 'fluent-ffmpeg';
+import ffmpeg from '../constants/ffmpeg';
 import * as colors from 'colors';
-
-
 import axios from '../config/axios';
 import { ClipData, IAutomaticCompilationConfig, ICompilationConfig, IManualCompilationConfig, IResolution } from '../types';
 import { isAutomatic, getSlug } from '../helpers';

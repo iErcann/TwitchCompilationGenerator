@@ -1,10 +1,10 @@
 import * as cliProgress from 'cli-progress';
-import * as ffmpeg from 'fluent-ffmpeg';
+import ffmpeg from '../constants/ffmpeg';
 import * as path from 'path';
 import { ICompilationConfig, IAutomaticCompilationConfig, IManualCompilationConfig } from '../types';
 import * as fs from 'fs';
 import { DEFAULT_RESOLUTION, Folders, UNVERIFIED_RESOLUTION_PREFIX } from '../constants';
-
+import * as rimraf from 'rimraf'
 import axios from '../config/axios';
 import { Clip } from './Clip';
 
@@ -60,17 +60,10 @@ export class CompilationController {
         console.log(mergedMsg.green);
     }
 
- 
-    run(){
+
+    run() {
         this.resetFolders();
         this.runCompilation();
-        // En vrai c'est useless car Clip fait déjà ce filter 
-        /*
-        if (isAutomatic(this.compilationConfig)) {
-            this.runAutomatic();
-        } else {
-            this.runManual();
-        }*/
     }
     clean(str: string): string {
         return str.replace(/[^0-9a-z-A-Z ]/g, '').replace(/ +/, ' ');
@@ -79,7 +72,7 @@ export class CompilationController {
     resetFolders(): void {
         for (const [key, value] of Object.entries(Folders)) {
             if (fs.existsSync(value)) {
-                fs.rmdirSync(value, { recursive: true });
+                rimraf.sync(value);
             }
             fs.mkdirSync(value);
         }
@@ -113,7 +106,7 @@ export class CompilationController {
                 if (err) {
                     return console.log('Unable to scan directory: ' + err);
                 }
-                
+
                 // Intro
                 //if (this.compilationConfig.introPath && this.compilationConfig.introPath.length > 0) proc.input(this.compilationConfig.introPath);
 
